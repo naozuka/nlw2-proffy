@@ -9,24 +9,24 @@ export default class LoginController {
         const { 
             email, 
             password 
-        } = request.body; 
+        } = request.body;
         
-        const saltRounds = 10;
-        const myPlaintextPassword = 's0/\/\P4$$w0rD';
-        const someOtherPlaintextPassword = 'not_bacon';
-
-        const pswHash = bcrypt.hashSync(password, saltRounds);
-        console.log(pswHash);
+        // criptografa a senha
+        // const saltRounds = 10;
+        // const pswHash = bcrypt.hashSync(password, saltRounds);        
+        // console.log(pswHash);
 
         let user = await db('users')
             .where('users.email', '=', email)
             .first();
 
-        console.log(user);
-
-        if (!bcrypt.compareSync(password, user.password))
+        if (user != null)
         {
-            user = null;
+            if (!bcrypt.compareSync(password, user.password))
+                return response.json(null);
+
+            // removes property password from object user
+            delete user.password;
         }
 
         return response.json(user);

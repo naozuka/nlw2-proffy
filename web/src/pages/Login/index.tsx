@@ -1,4 +1,5 @@
 import React, { useState, FormEvent }  from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Input from '../../components/Input';
 
@@ -10,23 +11,36 @@ import purpleHeartIcon from '../../assets/images/icons/purple-heart.svg';
 import './styles.css';
 import api from '../../services/api';
 
-
 function Login() {
+
+    const history = useHistory();
 
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
 
-    async function login(e: FormEvent) {
+    function handleLogin(e: FormEvent) {
+
+        console.log('chegou aqui');
         e.preventDefault();
 
-        const response = await api.get('login', {
-            params: {
-                email, 
-                password
+        api.post('login', {            
+            email, 
+            password
+        }).then((response) => 
+        {
+            if (response.data) 
+            {
+                console.log(response.data);
+                console.log('Login efetuado com sucesso!');
+                history.push('/landing');
+            } 
+            else 
+            {
+                console.log('Login ou senha inválidos');
             }
+        }).catch(() => {
+            console.log('Erro ao tentar realizar cadastro.');
         });
-        
-        console.log(response.data);
     }
 
     return (
@@ -39,7 +53,7 @@ function Login() {
             </div>
 
             <div className="login-container">
-                <div className="login-content">
+                <form onSubmit={handleLogin} className="login-content">
                     <h2>Fazer Login</h2>
                     <Input 
                         name="email" 
@@ -67,7 +81,7 @@ function Login() {
                         </button>
                     </div>
 
-                    <button className="btn-login">
+                    <button type="submit" className="btn-login">
                         Entrar
                     </button>
 
@@ -82,7 +96,7 @@ function Login() {
                             <img src={purpleHeartIcon} alt="Coração roxo"/>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     );
